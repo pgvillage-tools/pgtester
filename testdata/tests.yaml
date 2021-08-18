@@ -1,0 +1,17 @@
+dsn:
+  host: 127.0.0.1
+  port: 5432
+  user: postgres
+  password: pgtester
+
+tests:
+- query: "select count(*) total from pg_database"
+  results:
+  - total: 3
+- query: "select datname from pg_database order by 1"
+  results:
+  - datname: postgres
+  - datname: template0
+  - datname: template1
+- query: "select datname from pg_database where datname = 'bestaatniet'"
+  results: []
