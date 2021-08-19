@@ -2,6 +2,7 @@ package internal
 
 import (
 	"flag"
+	"fmt"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"mannemsolutions/pgtester/pkg/pg"
@@ -21,8 +22,22 @@ const (
 type Tests []Test
 
 type Test struct {
+	Name   string            `yaml:"name"`
 	Query  string            `yaml:"query"`
 	Results pg.OneFieldResults `yaml:"results"`
+}
+
+func (t *Test) Validate() (err error) {
+	if t.Name == "" {
+		t.Name = t.Query
+	} else if t.Query == "" {
+		// Let's hope it is a query
+		t.Query = t.Name
+	}
+	if t.Name == "" {
+		return fmt.Errorf("a defined test is missing the query and name arguments")
+	}
+	return nil
 }
 
 type Config struct {

@@ -70,7 +70,7 @@ func (ofr OneFieldResult) String() (s string) {
 		value = strings.Replace(value, "'", "\\'", -1)
 		results = append(results, fmt.Sprintf("'%s': '%s'", key, value))
 	}
-	return fmt.Sprintf("[ '%s' ]", strings.Join(results, "', '"))
+	return fmt.Sprintf("{ %s }", strings.Join(results, "', '"))
 }
 
 func (ofr OneFieldResult) Columns() (result []string) {
@@ -81,7 +81,8 @@ func (ofr OneFieldResult) Columns() (result []string) {
 }
 func (ofr OneFieldResult) Compare(other OneFieldResult) (err error) {
 	if len(ofr) != len(other) {
-		return fmt.Errorf("number of columns different between row ('%v') and compared row ('%v')", ofr.Columns(), other.Columns())
+		return fmt.Errorf("number of columns different between row [ '%v' ] and compared row [ '%v' ]",
+			strings.Join(ofr.Columns(), "', '"), strings.Join(other.Columns(), "', '"))
 	}
 	for key, value := range ofr {
 		otherValue, exists := other[key]
@@ -97,10 +98,13 @@ func (ofr OneFieldResult) Compare(other OneFieldResult) (err error) {
 
 func (results OneFieldResults) String() (s string) {
 	var arr []string
+	if len(results) == 0 {
+		return "[ ]"
+	}
 	for _, result := range results {
 		arr = append(arr, result.String())
 	}
-	return fmt.Sprintf("[ { %s } ]", strings.Join(arr, "}, {"))
+	return fmt.Sprintf("[ %s ]", strings.Join(arr, "}, {"))
 }
 
 func (results OneFieldResults) Compare(other OneFieldResults) (err error) {
@@ -111,7 +115,7 @@ func (results OneFieldResults) Compare(other OneFieldResults) (err error) {
 	for i, result := range results {
 		err = result.Compare(other[i])
 		if err != nil {
-			return fmt.Errorf("different %d'th result: %e", i, err)
+			return fmt.Errorf("different %d'th result: %s", i, err.Error())
 		}
 	}
 	return nil

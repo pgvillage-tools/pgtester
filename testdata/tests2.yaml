@@ -1,0 +1,30 @@
+dsn:
+  host: 127.0.0.1
+  port: 5432
+  user: postgres
+  password: pgtester
+
+tests:
+- name: Wrong tablename
+  query: "select count(*) total from pg_databases"
+  results:
+  - total: 3
+- name: Wrong column name
+  query: "select dbname from pg_database order by 1"
+  results:
+  - datname: postgres
+  - datname: template0
+  - datname: template1
+- name: Wrong number of results
+  query: "select datname from pg_database where datname = 'bestaatniet'"
+  results:
+  - datname: postgres
+- name: Wrong number of columns
+  query: "select datname from pg_database where datname = 'postgres'"
+  results:
+  - datname: postgres0
+    dattype: default
+- name: Wrong result value
+  query: "select datname from pg_database where datname = 'postgres'"
+  results:
+  - datname: postgres0
