@@ -1,5 +1,7 @@
 version: "3.9"  # optional since v1.27.0
 services:
+  pgtester:
+    build: .
   postgres:
     image: postgres:13
     ports:
