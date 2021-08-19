@@ -35,7 +35,7 @@ func Handle() {
 	if config.Debug {
 		atom.SetLevel(zapcore.DebugLevel)
 	}
-	conn := pg.NewConn(config.DSN)
+	conn := pg.NewConn(config.DSN, config.Retries, config.Delay)
 	for _, test := range config.Tests {
 		err = test.Validate()
 		if err != nil {

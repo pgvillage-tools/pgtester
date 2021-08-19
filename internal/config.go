@@ -8,6 +8,7 @@ import (
 	"mannemsolutions/pgtester/pkg/pg"
 	"os"
 	"path/filepath"
+	"time"
 )
 
 /*
@@ -41,9 +42,17 @@ func (t *Test) Validate() (err error) {
 }
 
 type Config struct {
-	Debug bool			`yaml:"debug"`
-	Tests Tests         `yaml:"tests"`
-	DSN   pg.Dsn        `yaml:"dsn"`
+	Debug   bool	      `yaml:"debug"`
+	Delay   time.Duration `yaml:"delay"`
+	Retries uint          `yaml:"retries"`
+	Tests   Tests         `yaml:"tests"`
+	DSN     pg.Dsn        `yaml:"dsn"`
+}
+
+func (c *Config) Defaults() {
+	if c.Delay.Nanoseconds() == 0 {
+		c.Delay = time.Second
+	}
 }
 
 func NewConfig() (config Config, err error) {
@@ -68,5 +77,6 @@ func NewConfig() (config Config, err error) {
 		return config, err
 	}
 	err = yaml.Unmarshal(yamlConfig, &config)
+	config.Defaults()
 	return config, err
 }
