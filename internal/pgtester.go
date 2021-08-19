@@ -1,9 +1,9 @@
 package internal
 
 import (
+	"github.com/mannemsolutions/pgtester/pkg/pg"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
-	"mannemsolutions/pgtester/pkg/pg"
 	"os"
 )
 

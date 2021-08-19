@@ -1,7 +1,7 @@
 package main
 
 import (
-	"mannemsolutions/pgtester/internal"
+	"github.com/mannemsolutions/pgtester/internal"
 )
 
 func main() {

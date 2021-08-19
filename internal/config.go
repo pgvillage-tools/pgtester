@@ -3,9 +3,9 @@ package internal
 import (
 	"flag"
 	"fmt"
+	"github.com/mannemsolutions/pgtester/pkg/pg"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
-	"mannemsolutions/pgtester/pkg/pg"
 	"os"
 	"path/filepath"
 	"time"
