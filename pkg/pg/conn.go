@@ -55,7 +55,6 @@ func (c *Conn) Connect() {
 		time.Sleep(c.delay)
 	}
 	log.Fatalf("number of connection retries (%d) exceeded", c.retries)
-	return
 }
 
 func (c *Conn) RunQueryGetOneField(query string, args ...interface{}) (result OneFieldResults, err error) {
