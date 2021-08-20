@@ -1,8 +1,13 @@
 dsn:
-  host: 127.0.0.1
+  host: postgres
   port: 5432
   user: postgres
   password: pgtester
+
+
+retries: 5
+delay: 100ms
+debug: true
 
 tests:
 - name: Wrong tablename
