@@ -58,9 +58,16 @@ func (c *Config) Defaults() {
 func NewConfig() (config Config, err error) {
 	var configFile string
 	var debug bool
+	var version bool
 	flag.StringVar(&configFile, "f", os.Getenv(envConfName), "Specify file with tests")
 	flag.BoolVar(&debug, "d", false, "Add debugging output")
+	flag.BoolVar(&version, "v", false, "Show version information")
+
 	flag.Parse()
+	if version {
+		fmt.Println(appVersion)
+		os.Exit(0)
+	}
 	 if configFile == "" {
 		 configFile = defaultConfFile
 	 }
