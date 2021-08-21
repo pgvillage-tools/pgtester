@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-func ResultValueToString(value interface{}) (s string, err error){
+func ResultValueToString(value interface{}) (s string, err error) {
 	switch v := value.(type) {
 	case string:
 		return v, nil
@@ -45,11 +45,11 @@ func ResultValueToString(value interface{}) (s string, err error){
 	}
 }
 
-type OneFieldResult map[string]string
-type OneFieldResults []OneFieldResult
+type Result map[string]string
+type Results []Result
 
-func NewOneFieldResultFromByteArrayArray(cols []string, values []interface{}) (ofr OneFieldResult, err error) {
-	ofr = make(OneFieldResult)
+func NewResultFromByteArrayArray(cols []string, values []interface{}) (ofr Result, err error) {
+	ofr = make(Result)
 	if len(cols) != len(values) {
 		return ofr, fmt.Errorf("number of cols different then number of values")
 	}
@@ -63,7 +63,7 @@ func NewOneFieldResultFromByteArrayArray(cols []string, values []interface{}) (o
 	return ofr, nil
 }
 
-func (ofr OneFieldResult) String() (s string) {
+func (ofr Result) String() (s string) {
 	var results []string
 	for key, value := range ofr {
 		key = strings.Replace(key, "'", "\\'", -1)
@@ -73,20 +73,20 @@ func (ofr OneFieldResult) String() (s string) {
 	return fmt.Sprintf("{ %s }", strings.Join(results, "', '"))
 }
 
-func (ofr OneFieldResult) Columns() (result []string) {
+func (ofr Result) Columns() (result []string) {
 	for key := range ofr {
 		result = append(result, key)
 	}
 	return result
 }
-func (ofr OneFieldResult) Compare(other OneFieldResult) (err error) {
+func (ofr Result) Compare(other Result) (err error) {
 	if len(ofr) != len(other) {
 		return fmt.Errorf("number of columns different between row [ '%v' ] and compared row [ '%v' ]",
 			strings.Join(ofr.Columns(), "', '"), strings.Join(other.Columns(), "', '"))
 	}
 	for key, value := range ofr {
 		otherValue, exists := other[key]
-		if ! exists {
+		if !exists {
 			return fmt.Errorf("column row ('%s') not in compared row", key)
 		}
 		if value != otherValue {
@@ -96,7 +96,7 @@ func (ofr OneFieldResult) Compare(other OneFieldResult) (err error) {
 	return nil
 }
 
-func (results OneFieldResults) String() (s string) {
+func (results Results) String() (s string) {
 	var arr []string
 	if len(results) == 0 {
 		return "[ ]"
@@ -107,7 +107,7 @@ func (results OneFieldResults) String() (s string) {
 	return fmt.Sprintf("[ %s ]", strings.Join(arr, "}, {"))
 }
 
-func (results OneFieldResults) Compare(other OneFieldResults) (err error) {
+func (results Results) Compare(other Results) (err error) {
 	if len(results) != len(other) {
 		return fmt.Errorf("different result (%s) then expected (%s)", results.String(),
 			other.String())
@@ -120,4 +120,3 @@ func (results OneFieldResults) Compare(other OneFieldResults) (err error) {
 	}
 	return nil
 }
-

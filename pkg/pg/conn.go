@@ -18,8 +18,8 @@ type Conn struct {
 func NewConn(connParams Dsn, retries uint, delay time.Duration) (c *Conn) {
 	return &Conn{
 		connParams: connParams,
-		retries: retries,
-		delay: delay,
+		retries:    retries,
+		delay:      delay,
 	}
 }
 
@@ -31,8 +31,7 @@ func (c *Conn) DSN() (dsn string) {
 	return strings.Join(pairs[:], " ")
 }
 
-func (c *Conn) Connect() {
-	var err error
+func (c *Conn) Connect() (err error) {
 	if c.conn != nil {
 		if c.conn.IsClosed() {
 			c.conn = nil
@@ -54,12 +53,15 @@ func (c *Conn) Connect() {
 		log.Debugf("waiting %s seconds before trying again", c.delay)
 		time.Sleep(c.delay)
 	}
-	log.Fatalf("number of connection retries (%d) exceeded", c.retries)
+	return fmt.Errorf("number of connection retries (%d) exceeded", c.retries)
 }
 
-func (c *Conn) RunQueryGetOneField(query string, args ...interface{}) (result OneFieldResults, err error) {
+func (c *Conn) RunQueryGetOneField(query string, args ...interface{}) (result Results, err error) {
 	var fieldDescriptions []string
-	c.Connect()
+	err = c.Connect()
+	if err != nil {
+		return Results{}, err
+	}
 
 	log.Debugf("running query %s with arguments %e", query, args)
 	rows, err := c.conn.Query(context.Background(), query, args...)
@@ -70,7 +72,7 @@ func (c *Conn) RunQueryGetOneField(query string, args ...interface{}) (result On
 		fieldDescriptions = append(fieldDescriptions, string(fd.Name))
 	}
 	for {
-		if ! rows.Next() {
+		if !rows.Next() {
 			break
 		}
 		if rows.Err() != nil {
@@ -80,7 +82,7 @@ func (c *Conn) RunQueryGetOneField(query string, args ...interface{}) (result On
 		if err != nil {
 			return result, err
 		}
-		ofr, err := NewOneFieldResultFromByteArrayArray(fieldDescriptions, values)
+		ofr, err := NewResultFromByteArrayArray(fieldDescriptions, values)
 		if err != nil {
 			return result, err
 		}

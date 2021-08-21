@@ -3,7 +3,8 @@ build:
 	go build ./cmd/pgtester
 
 debug:
-	~/go/bin/dlv debug --headless --listen=:2345 --api-version=2 --accept-multiclient ./cmd/pgtester
+	go build -gcflags "all=-N -l" ./cmd/pgtester
+	~/go/bin/dlv --headless --listen=:2345 --api-version=2 --accept-multiclient exec ./pgtester ./testdata
 
 run:
 	./pgtester -f tests.yaml
