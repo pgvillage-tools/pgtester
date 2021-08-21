@@ -1,8 +1,12 @@
 dsn:
-  host: 127.0.0.1
+  host: postgres
   port: 5432
   user: postgres
   password: pgtester
+
+retries: 60
+delay: 1s
+debug: false
 
 tests:
 - query: "select count(*) total from pg_database"

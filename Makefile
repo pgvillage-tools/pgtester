@@ -1,4 +1,5 @@
 build:
+	./set_version.sh
 	go build ./cmd/pgtester
 
 debug:
