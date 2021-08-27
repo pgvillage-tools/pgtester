@@ -13,7 +13,7 @@ Each test chapter can have the following information defined:
 - a dsn, with all connection details to connect to postgres.
  - **Note** that instead of configuring in this chapter, the [environment variables](https://www.postgresql.org/docs/current/libpq-envars.html) can also be used.
  - Options configured in this chapter take precedence over environment variables
- - the dsn chapter allows to set different connection details for different test chapters.
+ - the dsn chapter allows setting different connection details for different test chapters.
 - You can set the number of connection retries with the option `retries`.
  - Default is 0 retries (only one try)
  - The number of retries occur for every test in the chapter!!!
@@ -80,7 +80,7 @@ tests:
   - datname: postgres
   - datname: template0
   - datname: template1
-# This test would have name "select datname from pg_databases"
+# This test is named "select datname from pg_databases"
 - query: "select datname from pg_databases"
   results: []
   reverse: true

@@ -22,7 +22,7 @@ cat ./mytests*.yml | pgtester
 
 ## Container image
 For container environments [pgtester](https://github.com/MannemSolutions/pgtester) is also available on [dockerhub](https://hub.docker.com/repository/docker/mannemsolutions/pgtester).
-You can easilly pull it with:
+You can easily pull it with:
 ```bash
 docker pull mannemsolutions/pgtester
 ```

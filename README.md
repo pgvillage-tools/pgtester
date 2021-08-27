@@ -63,7 +63,7 @@ tests:
   - datname: postgres
   - datname: template0
   - datname: template1
-# This test would have name "select datname from pg_databases"
+# This test is named "select datname from pg_databases"
 - query: "select datname from pg_databases"
   results: []
   reverse: true
