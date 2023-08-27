@@ -40,8 +40,10 @@ func ResultValueToString(value interface{}) (s string, err error) {
 		return fmt.Sprintf("%d", v), nil
 	case []byte:
 		return fmt.Sprintf("%d", v), nil
+	case nil:
+		return "nil", nil
 	default:
-		return "", fmt.Errorf("unhandled datatype %e", value)
+		return "", fmt.Errorf("unhandled datatype %v", value)
 	}
 }
 
