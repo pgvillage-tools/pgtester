@@ -3,9 +3,10 @@ package pg
 import (
 	"context"
 	"fmt"
-	"github.com/jackc/pgx/v4"
 	"strings"
 	"time"
+
+	"github.com/jackc/pgx/v4"
 )
 
 type Conn struct {
@@ -66,6 +67,11 @@ func (c *Conn) RunQueryGetOneField(query string, args ...interface{}) (result Re
 	log.Debugf("running query %s with arguments %e", query, args)
 	rows, err := c.conn.Query(context.Background(), query, args...)
 	if err != nil {
+		if closeErr := c.conn.Close(context.Background()); closeErr != nil {
+			log.Fatal("Error on query, and I failed to close the connection.")
+		}
+		return result, err
+	} else if rows.Err() != nil {
 		return result, err
 	}
 	for _, fd := range rows.FieldDescriptions() {
@@ -87,6 +93,9 @@ func (c *Conn) RunQueryGetOneField(query string, args ...interface{}) (result Re
 			return result, err
 		}
 		result = append(result, ofr)
+	}
+	if err := rows.Err(); err != nil {
+		return result, err
 	}
 	return result, nil
 }
