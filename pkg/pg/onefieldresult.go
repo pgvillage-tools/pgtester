@@ -6,44 +6,44 @@ import (
 	"time"
 )
 
-func ResultValueToString(value interface{}) (s string, err error) {
+func ResultValueToString(value interface{}) string {
 	switch v := value.(type) {
 	case string:
-		return v, nil
+		return v
 	case float32, float64:
-		return fmt.Sprintf("%f", v), nil
+		return fmt.Sprintf("%f", v)
 	case bool:
-		return fmt.Sprintf("%t", v), nil
+		return fmt.Sprintf("%t", v)
 	case time.Duration:
-		return v.String(), nil
+		return v.String()
 	case time.Time:
-		return v.String(), nil
+		return v.String()
 	case int:
-		return fmt.Sprintf("%d", v), nil
+		return fmt.Sprintf("%d", v)
 	case int8:
-		return fmt.Sprintf("%d", v), nil
+		return fmt.Sprintf("%d", v)
 	case int16:
-		return fmt.Sprintf("%d", v), nil
+		return fmt.Sprintf("%d", v)
 	case int32:
-		return fmt.Sprintf("%d", v), nil
+		return fmt.Sprintf("%d", v)
 	case int64:
-		return fmt.Sprintf("%d", v), nil
+		return fmt.Sprintf("%d", v)
 	case uint:
-		return fmt.Sprintf("%d", v), nil
+		return fmt.Sprintf("%d", v)
 	case uint8:
-		return fmt.Sprintf("%d", v), nil
+		return fmt.Sprintf("%d", v)
 	case uint16:
-		return fmt.Sprintf("%d", v), nil
+		return fmt.Sprintf("%d", v)
 	case uint32:
-		return fmt.Sprintf("%d", v), nil
+		return fmt.Sprintf("%d", v)
 	case uint64:
-		return fmt.Sprintf("%d", v), nil
+		return fmt.Sprintf("%d", v)
 	case []byte:
-		return fmt.Sprintf("%d", v), nil
+		return fmt.Sprintf("%d", v)
 	case nil:
-		return "nil", nil
+		return "nil"
 	default:
-		return "", fmt.Errorf("unhandled datatype %v", value)
+		return fmt.Sprintf("unknown datatype %v", value)
 	}
 }
 
@@ -56,11 +56,7 @@ func NewResultFromByteArrayArray(cols []string, values []interface{}) (ofr Resul
 		return ofr, fmt.Errorf("number of cols different then number of values")
 	}
 	for i, col := range cols {
-		value, err := ResultValueToString(values[i])
-		if err != nil {
-			return ofr, err
-		}
-		ofr[col] = value
+		ofr[col] = ResultValueToString(values[i])
 	}
 	return ofr, nil
 }
