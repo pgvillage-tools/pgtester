@@ -61,24 +61,42 @@ func NewResultFromByteArrayArray(cols []string, values []interface{}) (ofr Resul
 	return ofr, nil
 }
 
+func (ofr Result) String() (s string) {
+	var results []string
+	for key, value := range ofr {
+		key = strings.Replace(key, "'", "\\'", -1)
+		value = strings.Replace(value, "'", "\\'", -1)
+		results = append(results, fmt.Sprintf("'%s': '%s'", key, value))
+	}
+	return fmt.Sprintf("{ %s }", strings.Join(results, ", "))
+}
+
 func (ofr Result) Columns() (result []string) {
 	for key := range ofr {
 		result = append(result, key)
 	}
 	return result
 }
+
+func FormattedString(s string) string {
+	return fmt.Sprintf("'%s'", strings.Replace(s, "'", "\\'", -1))
+}
+
 func (ofr Result) Compare(other Result) (err error) {
 	if len(ofr) != len(other) {
-		return fmt.Errorf("number of columns different between row [ '%v' ] and compared row [ '%v' ]",
-			strings.Join(ofr.Columns(), "', '"), strings.Join(other.Columns(), "', '"))
+		return fmt.Errorf("number of columns different between row %v and compared row %v",
+			ofr.Columns(), other.Columns())
 	}
 	for key, value := range ofr {
 		otherValue, exists := other[key]
 		if !exists {
-			return fmt.Errorf("column row ('%s') not in compared row", key)
+			return fmt.Errorf("column row (%s) not in compared row", FormattedString(key))
 		}
 		if value != otherValue {
-			return fmt.Errorf("column '%s' differs between row ('%s'), and comparedrow ('%s')", key, value, otherValue)
+			return fmt.Errorf("column %s differs between row (%s), and comparedrow (%s)",
+				FormattedString(key),
+				FormattedString(value),
+				FormattedString(otherValue))
 		}
 	}
 	return nil
@@ -90,7 +108,7 @@ func (results Results) String() (s string) {
 		return "[ ]"
 	}
 	for _, result := range results {
-		arr = append(arr, fmt.Sprintf("%v", result))
+		arr = append(arr, result.String())
 	}
 	return fmt.Sprintf("%v", arr)
 }
