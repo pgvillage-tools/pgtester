@@ -64,9 +64,9 @@ func NewResultFromByteArrayArray(cols []string, values []interface{}) (ofr Resul
 func (ofr Result) String() (s string) {
 	var results []string
 	for key, value := range ofr {
-		key = strings.Replace(key, "'", "\\'", -1)
-		value = strings.Replace(value, "'", "\\'", -1)
-		results = append(results, fmt.Sprintf("'%s': '%s'", key, value))
+		results = append(results, fmt.Sprintf("%s: %s",
+			FormattedString(key),
+			FormattedString(value)))
 	}
 	return fmt.Sprintf("{ %s }", strings.Join(results, ", "))
 }
@@ -110,7 +110,7 @@ func (results Results) String() (s string) {
 	for _, result := range results {
 		arr = append(arr, result.String())
 	}
-	return fmt.Sprintf("%v", arr)
+	return fmt.Sprintf("[ %s ]", strings.Join(arr, ", "))
 }
 
 func (results Results) Compare(other Results) (err error) {
