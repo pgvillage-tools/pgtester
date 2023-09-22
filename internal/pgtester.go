@@ -2,11 +2,12 @@ package internal
 
 import (
 	"fmt"
+	"os"
+	"strings"
+
 	"github.com/mannemsolutions/pgtester/pkg/pg"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
-	"os"
-	"strings"
 )
 
 var (
@@ -45,24 +46,24 @@ func Handle() {
 			atom.SetLevel(zapcore.InfoLevel)
 		}
 		conn := pg.NewConn(config.DSN, config.Retries, config.Delay)
-		for _, test := range config.Tests {
+		for i, test := range config.Tests {
 			err = test.Validate()
 			if err != nil {
-				log.Errorf("%s occurred on test '%s': %s", test.MsgOnError(), test.Name, err.Error())
+				log.Errorf("Test %d (%s): %s occurred : %s", i, test.Name, test.MsgOnError(), err.Error())
 				errors += test.IncreaseOnError()
 				continue
 			}
 			result, err := conn.RunQueryGetOneField(test.Query)
 			if err != nil {
-				log.Errorf("%s occurred on test '%s': %s", test.MsgOnError(), test.Name, err.Error())
+				log.Errorf("Test %d (%s): occurred : %s", i, test.Name, test.MsgOnError(), err.Error())
 				errors += test.IncreaseOnError()
 			} else {
 				err = result.Compare(test.Results)
 				if err != nil {
-					log.Errorf("%s occurred on test '%s': %s", test.MsgOnError(), test.Name, err.Error())
+					log.Errorf("Test %d (%s): occurred : %s", i, test.Name, test.MsgOnError(), err.Error())
 					errors += test.IncreaseOnError()
 				} else {
-					log.Infof("%s on test '%s'", test.MsgOnSuccess(), test.Name)
+					log.Infof("Test %d (%s): '%s'", i, test.Name, test.MsgOnSuccess())
 					errors += test.IncreaseOnSuccess()
 				}
 			}

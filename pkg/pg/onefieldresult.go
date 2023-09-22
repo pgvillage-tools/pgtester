@@ -2,8 +2,11 @@ package pg
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 	"time"
+
+	"github.com/jackc/pgtype"
 )
 
 func ResultValueToString(value interface{}) string {
@@ -40,6 +43,12 @@ func ResultValueToString(value interface{}) string {
 		return fmt.Sprintf("%d", v)
 	case []byte:
 		return fmt.Sprintf("%d", v)
+	case pgtype.Float4Array:
+		var l []string
+		for _, e := range v.Elements {
+			l = append(l, fmt.Sprintf("%f", e.Float))
+		}
+		return fmt.Sprintf("[%s]", strings.Join(l, ","))
 	case nil:
 		return "nil"
 	default:
@@ -92,8 +101,15 @@ func (ofr Result) Compare(other Result) (err error) {
 		if !exists {
 			return fmt.Errorf("column row (%s) not in compared row", FormattedString(key))
 		}
-		if value != otherValue {
-			return fmt.Errorf("column %s differs between row (%s), and comparedrow (%s)",
+		if matched, err := regexp.MatchString(otherValue, value); err != nil {
+			if value != otherValue {
+				return fmt.Errorf("comparedrow is not an re, and column %s differs between row (%s), and comparedrow (%s)",
+					FormattedString(key),
+					FormattedString(value),
+					FormattedString(otherValue))
+			}
+		} else if !matched {
+			return fmt.Errorf("column %s value (%s) does not match with regular expression (%s)",
 				FormattedString(key),
 				FormattedString(value),
 				FormattedString(otherValue))
