@@ -7,7 +7,7 @@ debug:
 	~/go/bin/dlv --headless --listen=:2345 --api-version=2 --accept-multiclient exec ./pgtester ./testdata
 
 run:
-	./pgtester -f tests.yaml
+	./pgtester testdata/*
 
 fmt:
 	gofmt -w .

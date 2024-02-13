@@ -5,13 +5,14 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"github.com/mannemsolutions/pgtester/pkg/pg"
-	"gopkg.in/yaml.v3"
 	"io"
 	"os"
 	"path/filepath"
 	"sort"
 	"time"
+
+	"github.com/mannemsolutions/pgtester/pkg/pg"
+	"gopkg.in/yaml.v3"
 )
 
 /*
@@ -77,7 +78,7 @@ type Config struct {
 	DSN     pg.Dsn        `yaml:"dsn"`
 }
 
-func (c Config) Name() (name string){
+func (c Config) Name() (name string) {
 	return fmt.Sprintf("%s (%d)", c.path, c.index)
 }
 
@@ -88,25 +89,23 @@ func NewConfigsFromReader(reader io.Reader, name string) (configs Configs, err e
 		// create new spec here
 		config := new(Config)
 		// pass a reference to spec reference
-		err := decoder.Decode(&config)
-		// check it was parsed
-		if config == nil {
-			continue
-		}
-		// break the loop in case of EOF
-		if errors.Is(err, io.EOF) {
+		if err := decoder.Decode(&config); errors.Is(err, io.EOF) {
+			log.Debug("EOF")
 			break
-		}
-		if err != nil {
+		} else if err != nil {
 			return Configs{}, err
-		}
-		if config.Delay.Nanoseconds() == 0 {
+		} else if config == nil {
+			// check it was parsed
+			log.Debug("empty config")
+			continue
+		} else if config.Delay.Nanoseconds() == 0 {
 			config.Delay = time.Second
 		}
 		config.path = name
 		config.index = i
-		i+=1
+		i += 1
 		configs = append(configs, *config)
+		log.Infof("Number of configs: %d", len(configs))
 	}
 	return configs, nil
 }
@@ -121,6 +120,7 @@ func NewConfigsFromFile(path string) (c Configs, err error) {
 }
 
 func NewConfigsFromStdin() (configs Configs, err error) {
+	log.Info("Parsing yaml from stdin")
 	reader := bufio.NewReader(os.Stdin)
 	return NewConfigsFromReader(reader, "(stdin)")
 }
@@ -128,6 +128,7 @@ func NewConfigsFromStdin() (configs Configs, err error) {
 // ReadFromFileOrDir returns an array of Configs parsed from all yaml files, found while recursively walking
 // through a directory, while following symlinks as needed.
 func ReadFromFileOrDir(path string) (configs Configs, err error) {
+	log.Infof("Parsing yaml from %s", path)
 	path, err = filepath.EvalSymlinks(path)
 	if err != nil {
 		return Configs{}, err
@@ -194,7 +195,7 @@ func GetConfigs() (configs Configs, err error) {
 	for _, path := range paths {
 		newConfigs, err := ReadFromFileOrDir(path)
 		if err != nil {
-			return Configs{}, nil
+			return Configs{}, err
 		}
 		configs = append(configs, newConfigs...)
 	}
