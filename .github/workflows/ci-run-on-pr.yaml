@@ -126,6 +126,3 @@ jobs:
       - name: Integration tests
         run: |
           make check-coverage
-        env:
-          PGC_TEST_ROOT_TOKEN: pgcustodian
-          VAULT_ADDR: http://127.0.0.1:8200
