@@ -5,7 +5,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/mannemsolutions/pgtester/pkg/pg"
+	"github.com/pgvillage-tools/pgtester/pkg/pg"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )

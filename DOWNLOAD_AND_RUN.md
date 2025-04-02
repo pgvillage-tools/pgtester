@@ -1,12 +1,12 @@
 # Download and run
 
 ## Direct download
-[pgtester](https://github.com/MannemSolutions/pgtester) is available for download for many platforms and architectures from the [Github Releases page](https://github.com/MannemSolutions/pgtester/releases).
+[pgtester](https://github.com/pgvillage-tools/pgtester) is available for download for many platforms and architectures from the [Github Releases page](https://github.com/pgvillage-tools/pgtester/releases).
 It could be as simple as:
 ```bash
 PGTESTER_VERSION=v0.3.0
 cd $(mktemp -d)
-curl -Lo "pgtester-${PGTESTER_VERSION}-linux-amd64.tar.gz" "https://github.com/MannemSolutions/pgtester/releases/download/${PGTESTER_VERSION}/pgtester-${PGTESTER_VERSION}-linux-amd64.tar.gz"
+curl -Lo "pgtester-${PGTESTER_VERSION}-linux-amd64.tar.gz" "https://github.com/pgvillage-tools/pgtester/releases/download/${PGTESTER_VERSION}/pgtester-${PGTESTER_VERSION}-linux-amd64.tar.gz"
 tar -xvf "./pgtester-${PGTESTER_VERSION}-linux-amd64.tar.gz"
 mv pgtester /usr/local/bin
 cd -
@@ -21,15 +21,15 @@ cat ./mytests*.yml | pgtester
 ```
 
 ## Container image
-For container environments [pgtester](https://github.com/MannemSolutions/pgtester) is also available on [dockerhub](https://hub.docker.com/repository/docker/mannemsolutions/pgtester).
+For container environments [pgtester](https://github.com/pgvillage-tools/pgtester) is also available on [dockerhub](https://hub.docker.com/repository/docker/pgvillage-tools/pgtester).
 You can easily pull it with:
 ```bash
-docker pull mannemsolutions/pgtester
+docker pull pgvillage-tools/pgtester
 ```
 
 Using it would be as easy as:
 ```bash
-cat testdata/pgtester/tests.yaml | docker run -i mannemsolutions/pgtester pgtester
+cat testdata/pgtester/tests.yaml | docker run -i pgvillage-tools/pgtester pgtester
 ```
 
 ## docker-compose
@@ -38,7 +38,7 @@ The docker-compose.yml file could have contents like this:
 ```yaml
 services:
   pgtester:
-    image: mannemsolutions/pgtester
+    image: pgvillage-tools/pgtester
     command: pgtester /etc/pgtestdata/examples/tests1.yaml
   postgres:
     image: postgres:13
@@ -68,7 +68,7 @@ cat ./mytests*.yml | docker-compose up pgtester
 
 Although not advised, you can also directly build from source:
 ```bash
-go install github.com/mannemsolutions/pgtester/cmd/pgtester@v0.3.0
+go install github.com/pgvillage-tools/pgtester/cmd/pgtester@v0.3.0
 ```
 
 After that you can run pgtester directly from the prompt:

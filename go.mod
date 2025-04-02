@@ -1,4 +1,4 @@
-module github.com/mannemsolutions/pgtester
+module github.com/pgvillage-tools/pgtester
 
 go 1.16
 

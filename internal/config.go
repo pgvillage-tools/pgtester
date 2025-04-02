@@ -11,7 +11,7 @@ import (
 	"sort"
 	"time"
 
-	"github.com/mannemsolutions/pgtester/pkg/pg"
+	"github.com/pgvillage-tools/pgtester/pkg/pg"
 	"gopkg.in/yaml.v3"
 )
 

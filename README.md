@@ -2,15 +2,15 @@
 A tool to run queries against postgres and check for an expected result
 
 ## The origin
-While writing postgres software that manages objects in Postgres (like [pgfga](https://github.com/MannemSolutions/pgfga)), we needed a tool for easy integration testing.
+While writing postgres software that manages objects in Postgres (like [pgfga](https://github.com/pgvillage-tools/pgfga)), we needed a tool for easy integration testing.
 As an integration test we just wanted to create an environment with Postgres, the tool, (and other components as required), run the tool and check the outcome in postgres.
 We decided to build a tool which can run defined queries against Postgres, and check for expected results.
-And thus [pgtester](https://github.com/MannemSolutions/pgtester) was born.
+And thus [pgtester](https://github.com/pgvillage-tools/pgtester) was born.
 
 ## Downloading pgtester
-The most straight forward way is to download [pgtester](https://github.com/MannemSolutions/pgtester) directly from the [github release page](https://github.com/MannemSolutions/pgtester/releases).
+The most straight forward way is to download [pgtester](https://github.com/pgvillage-tools/pgtester) directly from the [github release page](https://github.com/pgvillage-tools/pgtester/releases).
 But there are other options, like
-- using the [container image from dockerhub](https://hub.docker.com/repository/docker/mannemsolutions/pgtester/general)
+- using the [container image from dockerhub](https://hub.docker.com/repository/docker/pgvillage-tools/pgtester/general)
 - direct build from source (if you feel you must)
 
 Please refer to [our download instructions](DOWNLOAD_AND_RUN.md) for more details on all options.
