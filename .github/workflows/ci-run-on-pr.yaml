@@ -72,7 +72,29 @@ jobs:
           version: v1.60.3
           args: --verbose
 
+  unittests:
+    name: Run unittests
+    runs-on: ubuntu-22.04
+    if: ${{ needs.codechanges.outputs.backend == 'true' && github.event.pull_request.draft == false}}
+    needs:
+      - codechanges
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Setup Golang
+        uses: actions/setup-go@0a12ed9d6a96ab950c8f026ed9f722fe0da7ef32 # v5.0.2
+        with:
+          go-version: ${{ env.GOLANG_VERSION }}
+      - name: Integration tests
+        run: |
+          make check-coverage
+
   integrationtests:
+    strategy:
+      matrix:
+        PGVERSION: ['13', '14', '15', '16', '17']
+    env:
+      PGVERSION: '{{ matrix.PGVERSION }}'
     name: Run integration tests
     runs-on: ubuntu-22.04
     if: ${{ needs.codechanges.outputs.backend == 'true' && github.event.pull_request.draft == false}}
@@ -93,36 +115,7 @@ jobs:
           docker-compose --version
       - name: postgres
         run: |
-          docker-compose up -d postgres || exit 1
-      - name: tests
+          docker-compose up -d postgres
+      - name: pgtester
         run: |
-          docker-compose run pgtester pgtester /etc/pgtestdata/examples || exit 2
-
-  unittests:
-    name: Run unittests
-    runs-on: ubuntu-22.04
-    if: ${{ needs.codechanges.outputs.backend == 'true' && github.event.pull_request.draft == false}}
-    needs:
-      - codechanges
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Setup Golang
-        uses: actions/setup-go@0a12ed9d6a96ab950c8f026ed9f722fe0da7ef32 # v5.0.2
-        with:
-          go-version: ${{ env.GOLANG_VERSION }}
-      - name: update to docker-compose v2
-        run: |
-          sudo apt-get install -y curl
-          sudo curl -SL https://github.com/docker/compose/releases/download/v2.3.3/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose
-          sudo chmod +x /usr/local/bin/docker-compose
-      - name: compose
-        run: |
-          docker-compose --version
-          echo $PGVERSION
-      - name: vault
-        run: |
-          docker-compose up -d vault
-      - name: Integration tests
-        run: |
-          make check-coverage
+          docker-compose up pgtester pgtester --exit-code-from pgtester

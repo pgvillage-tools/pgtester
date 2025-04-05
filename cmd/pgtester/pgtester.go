@@ -1,10 +1,10 @@
 package main
 
 import (
-	"github.com/pgvillage-tools/pgtester/internal"
+	"github.com/pgvillage-tools/pgtester/internal/pgtester"
 )
 
 func main() {
-	internal.Initialize()
-	internal.Handle()
+	pgtester.Initialize()
+	pgtester.Handle()
 }
