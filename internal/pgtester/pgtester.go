@@ -1,10 +1,11 @@
-package internal
+package pgtester
 
 import (
 	"fmt"
 	"os"
 	"strings"
 
+	"github.com/pgvillage-tools/pgtester/internal/config"
 	"github.com/pgvillage-tools/pgtester/pkg/pg"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -30,7 +31,7 @@ func Initialize() {
 
 func Handle() {
 	var errors int
-	configs, err := GetConfigs()
+	configs, err := config.GetConfigs()
 	if err != nil {
 		log.Errorf("could not parse all configs: %s", err.Error())
 		os.Exit(125)

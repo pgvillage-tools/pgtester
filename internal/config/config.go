@@ -1,4 +1,4 @@
-package internal
+package config
 
 import (
 	"bufio"
@@ -11,7 +11,9 @@ import (
 	"sort"
 	"time"
 
+	"github.com/pgvillage-tools/pgtester/internal/version"
 	"github.com/pgvillage-tools/pgtester/pkg/pg"
+	"github.com/rs/zerolog/log"
 	"gopkg.in/yaml.v3"
 )
 
@@ -90,13 +92,13 @@ func NewConfigsFromReader(reader io.Reader, name string) (configs Configs, err e
 		config := new(Config)
 		// pass a reference to spec reference
 		if err := decoder.Decode(&config); errors.Is(err, io.EOF) {
-			log.Debug("EOF")
+			log.Debug().Msg("EOF")
 			break
 		} else if err != nil {
 			return Configs{}, err
 		} else if config == nil {
 			// check it was parsed
-			log.Debug("empty config")
+			log.Debug().Msg("empty config")
 			continue
 		} else if config.Delay.Nanoseconds() == 0 {
 			config.Delay = time.Second
@@ -105,7 +107,7 @@ func NewConfigsFromReader(reader io.Reader, name string) (configs Configs, err e
 		config.index = i
 		i += 1
 		configs = append(configs, *config)
-		log.Infof("Number of configs: %d", len(configs))
+		log.Debug().Msgf("Number of configs: %d", len(configs))
 	}
 	return configs, nil
 }
@@ -120,7 +122,7 @@ func NewConfigsFromFile(path string) (c Configs, err error) {
 }
 
 func NewConfigsFromStdin() (configs Configs, err error) {
-	log.Info("Parsing yaml from stdin")
+	log.Info().Msg("Parsing yaml from stdin")
 	reader := bufio.NewReader(os.Stdin)
 	return NewConfigsFromReader(reader, "(stdin)")
 }
@@ -128,7 +130,7 @@ func NewConfigsFromStdin() (configs Configs, err error) {
 // ReadFromFileOrDir returns an array of Configs parsed from all yaml files, found while recursively walking
 // through a directory, while following symlinks as needed.
 func ReadFromFileOrDir(path string) (configs Configs, err error) {
-	log.Infof("Parsing yaml from %s", path)
+	log.Info().Msgf("Parsing yaml from %s", path)
 	path, err = filepath.EvalSymlinks(path)
 	if err != nil {
 		return Configs{}, err
@@ -179,13 +181,13 @@ func ReadFromFileOrDir(path string) (configs Configs, err error) {
 
 func GetConfigs() (configs Configs, err error) {
 	var debug bool
-	var version bool
+	var myVersion bool
 	flag.BoolVar(&debug, "d", false, "Add debugging output")
-	flag.BoolVar(&version, "v", false, "Show version information")
+	flag.BoolVar(&myVersion, "v", false, "Show version information")
 
 	flag.Parse()
-	if version {
-		fmt.Println(appVersion)
+	if myVersion {
+		fmt.Println(version.GetAppVersion())
 		os.Exit(0)
 	}
 	paths := flag.Args()

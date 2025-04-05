@@ -116,9 +116,6 @@ jobs:
       - name: postgres
         run: |
           docker-compose up -d postgres
-      - name: pgschema
-        run: |
-          docker-compose up pgfga --exit-code-from pgfga
       - name: pgtester
         run: |
           docker-compose up pgtester pgtester --exit-code-from pgtester
