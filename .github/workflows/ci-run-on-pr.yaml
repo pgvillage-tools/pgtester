@@ -97,7 +97,7 @@ jobs:
       PGVERSION: '{{ matrix.PGVERSION }}'
     name: Run integration tests
     runs-on: ubuntu-22.04
-    if: ${{ needs.codechanges.outputs.backend == 'true' && github.event.pull_request.draft == false}}
+    #if: ${{ needs.codechanges.outputs.backend == 'true' && github.event.pull_request.draft == false}}
     needs:
       - codechanges
     steps:
@@ -118,4 +118,4 @@ jobs:
           docker-compose up -d postgres
       - name: pgtester
         run: |
-          docker-compose up pgtester pgtester --exit-code-from pgtester
+          docker-compose up pgtester --exit-code-from pgtester
