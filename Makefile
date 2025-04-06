@@ -16,6 +16,7 @@ test: sec lint
 
 sec:
 	gosec ./...
+
 lint:
 	golangci-lint run
 
@@ -26,4 +27,4 @@ install-go-test-coverage:
 .PHONY: check-coverage
 check-coverage: install-go-test-coverage
 	go test $$(go list ./... | grep -v /e2e) -coverprofile=./cover.out -covermode=atomic -coverpkg=./...
-	${GOBIN}/go-test-coverage --config=./.testcoverage.yml
+	go-test-coverage --config=./.testcoverage.yml
