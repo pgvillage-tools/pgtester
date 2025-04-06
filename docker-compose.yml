@@ -1,12 +1,14 @@
-version: "3.9"  # optional since v1.27.0
+version: '3.9' # optional since v1.27.0
 services:
   pgtester:
     build: .
+    command: /etc/pgtestdata/tests
+    volumes:
+      - ./testdata:/etc/pgtestdata/tests
   postgres:
-    image: postgres:13
+    image: postgres:17
     ports:
-      - "5432:5432"
+      - '5432:5432'
     environment:
       POSTGRES_HOST_AUTH_METHOD: 'md5'
       POSTGRES_PASSWORD: pgtester
-
