@@ -17,10 +17,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-/*
- * This module reads the config file and returns a config object with all entries from the config yaml file.
- */
-
+// Tests is a struct that can hold a list of tests (as read from a tests file).
 type Tests []Test
 
 type Test struct {
