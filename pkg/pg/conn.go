@@ -1,4 +1,4 @@
-// Package pg is the module that can be used for communication with postgress
+// Package pg is the module that can be used for communication with postgres
 package pg
 
 import (
@@ -10,7 +10,7 @@ import (
 	"github.com/jackc/pgx/v4"
 )
 
-// Conn is a struct that can contain information about the conection (for example the delay)
+// Conn is a struct that can contain information about the connection (for example the delay)
 type Conn struct {
 	connParams Dsn
 	conn       *pgx.Conn
@@ -36,22 +36,22 @@ func (c *Conn) DSN() (dsn string) {
 	return strings.Join(pairs[:], " ")
 }
 
-// Connect is a function that uses the conn object to connect you to postgress
+// Connect is a function that uses the conn object to connect you to postgres
 func (c *Conn) Connect() (err error) {
+	const zero = 0
 	if c.conn != nil {
-		if c.conn.IsClosed() {
-			c.conn = nil
-		} else {
+		if !c.conn.IsClosed() {
 			log.Debugf("already connected")
 			return nil
 		}
+		c.conn.IsClosed()
 	}
 	dsn := c.DSN()
 	log.Debugf("connecting to %s", dsn)
-	for i := 0; i <= int(c.retries); i++ {
+	for i := zero; i <= int(c.retries); i++ {
 		c.conn, err = pgx.Connect(context.Background(), dsn)
 		if err == nil {
-			log.Debugf("succesfully connected")
+			log.Debugf("successfully connected")
 			return nil
 		}
 		c.conn = nil
@@ -62,7 +62,7 @@ func (c *Conn) Connect() (err error) {
 	return fmt.Errorf("number of connection retries (%d) exceeded", c.retries)
 }
 
-// RunQueryGetOneField is a function that allows you to send querys to postgress and returns the result.
+// RunQueryGetOneField is a function that allows you to send querys to postgres and returns the result.
 func (c *Conn) RunQueryGetOneField(query string, args ...any) (result Results, err error) {
 	var fieldDescriptions []string
 	err = c.Connect()
@@ -91,7 +91,7 @@ func (c *Conn) RunQueryGetOneField(query string, args ...any) (result Results, e
 		if err != nil {
 			return result, err
 		}
-		ofr, err := NewResultFromByteArrayArray(fieldDescriptions, values)
+		ofr, err := newResultFromByteArrayArray(fieldDescriptions, values)
 		if err != nil {
 			return result, err
 		}
