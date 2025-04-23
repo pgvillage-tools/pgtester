@@ -1,3 +1,5 @@
+// Package config reads tests from one or more .yml files and can be used as a
+// starting point for running the tests
 package config
 
 import (
@@ -20,6 +22,7 @@ import (
 // Tests is a struct that can hold a list of tests (as read from a tests file).
 type Tests []Test
 
+// Test is a struct that can hold test information.
 type Test struct {
 	Name    string     `yaml:"name"`
 	Query   string     `yaml:"query"`
@@ -27,6 +30,7 @@ type Test struct {
 	Reverse bool       `yaml:"reverse"`
 }
 
+// Validate is is a function that checks if a Test is a valid Test.
 func (t *Test) Validate() (err error) {
 	if t.Name == "" {
 		t.Name = t.Query
@@ -40,6 +44,7 @@ func (t *Test) Validate() (err error) {
 	return nil
 }
 
+// IncreaseOnError is a function that reverses a test when an error occurs.
 func (t *Test) IncreaseOnError() (increase int) {
 	if t.Reverse {
 		return 0
@@ -47,10 +52,13 @@ func (t *Test) IncreaseOnError() (increase int) {
 	return 1
 }
 
+// IncreaseOnSuccess is a function that reverses the test when there is an succes
 func (t *Test) IncreaseOnSuccess() (increase int) {
 	return 1 - t.IncreaseOnError()
 }
 
+// MsgOnError is a function that sends a message containing either 'expected'
+// or 'unexpected' error when a error occurs.
 func (t *Test) MsgOnError() (msg string) {
 	if t.Reverse {
 		return "expected error"
@@ -58,6 +66,8 @@ func (t *Test) MsgOnError() (msg string) {
 	return "unexpected error"
 }
 
+// MsgOnSuccess is a function that sends a message containing either 'expected'
+// or 'unexpected' succes when a succes occurs.
 func (t *Test) MsgOnSuccess() (msg string) {
 	if t.Reverse {
 		return "unexpected success"
@@ -65,8 +75,10 @@ func (t *Test) MsgOnSuccess() (msg string) {
 	return "success as expected"
 }
 
+// Configs is a struct that can hold a number of configs.
 type Configs []Config
 
+// Config is a struct thatcan hold configuration data.
 type Config struct {
 	path    string
 	index   int
@@ -77,11 +89,13 @@ type Config struct {
 	DSN     pg.Dsn        `yaml:"dsn"`
 }
 
+// Name returns the name of this testconfig
 func (c Config) Name() (name string) {
 	return fmt.Sprintf("%s (%d)", c.path, c.index)
 }
 
-func NewConfigsFromReader(reader io.Reader, name string) (configs Configs, err error) {
+// NewConfigFromReader
+func newConfigsFromReader(reader io.Reader, name string) (configs Configs, err error) {
 	var i int
 	decoder := yaml.NewDecoder(reader)
 	for {
@@ -100,28 +114,30 @@ func NewConfigsFromReader(reader io.Reader, name string) (configs Configs, err e
 		} else if config.Delay.Nanoseconds() == 0 {
 			config.Delay = time.Second
 		}
+
 		config.path = name
 		config.index = i
-		i += 1
+		i++
 		configs = append(configs, *config)
 		log.Debug().Msgf("Number of configs: %d", len(configs))
 	}
 	return configs, nil
 }
-func NewConfigsFromFile(path string) (c Configs, err error) {
+
+func newConfigsFromFile(path string) (c Configs, err error) {
 	// This only parsed as yaml, nothing else
 	// #nosec
 	reader, err := os.Open(path)
 	if err != nil {
 		return c, err
 	}
-	return NewConfigsFromReader(reader, path)
+	return newConfigsFromReader(reader, path)
 }
 
-func NewConfigsFromStdin() (configs Configs, err error) {
+func newConfigsFromStdin() (configs Configs, err error) {
 	log.Info().Msg("Parsing yaml from stdin")
 	reader := bufio.NewReader(os.Stdin)
-	return NewConfigsFromReader(reader, "(stdin)")
+	return newConfigsFromReader(reader, "(stdin)")
 }
 
 // ReadFromFileOrDir returns an array of Configs parsed from all yaml files, found while recursively walking
@@ -167,7 +183,7 @@ func ReadFromFileOrDir(path string) (configs Configs, err error) {
 		}
 	} else {
 		// file is not a directory
-		configs, err = NewConfigsFromFile(path)
+		configs, err = newConfigsFromFile(path)
 		if err != nil {
 			_ = file.Close()
 			return Configs{}, err
@@ -176,6 +192,7 @@ func ReadFromFileOrDir(path string) (configs Configs, err error) {
 	return configs, file.Close()
 }
 
+// GetConfigs is a function that fetches configs from either paths or stdin and returns a list of testconfigs.
 func GetConfigs() (configs Configs, err error) {
 	var debug bool
 	var myVersion bool
@@ -189,7 +206,7 @@ func GetConfigs() (configs Configs, err error) {
 	}
 	paths := flag.Args()
 	if len(paths) == 0 {
-		return NewConfigsFromStdin()
+		return newConfigsFromStdin()
 	}
 	for _, path := range paths {
 		newConfigs, err := ReadFromFileOrDir(path)

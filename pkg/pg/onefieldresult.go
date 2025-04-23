@@ -9,7 +9,9 @@ import (
 	"github.com/jackc/pgtype"
 )
 
-func ResultValueToString(value interface{}) string {
+// ResultValueToString is a function that can return given data such as an
+// unsigned 8 bit integer and return it as a string containing a number
+func ResultValueToString(value any) string {
 	switch v := value.(type) {
 	case string:
 		return v
@@ -56,11 +58,14 @@ func ResultValueToString(value interface{}) string {
 	}
 }
 
+// Result is a map containing a string of the result
 type Result map[string]string
+
+// Results contains a list of result values
 type Results []Result
 
-func NewResultFromByteArrayArray(cols []string, values []interface{}) (ofr Result, err error) {
-	ofr = make(Result)
+func newResultFromByteArrayArray(cols []string, values []any) (ofr Result, err error) {
+	ofr = Result{}
 	if len(cols) != len(values) {
 		return ofr, fmt.Errorf("number of cols different then number of values")
 	}
@@ -80,6 +85,7 @@ func (ofr Result) String() (s string) {
 	return fmt.Sprintf("{ %s }", strings.Join(results, ", "))
 }
 
+// Columns is a function that creates a column of all the results
 func (ofr Result) Columns() (result []string) {
 	for key := range ofr {
 		result = append(result, key)
@@ -87,10 +93,12 @@ func (ofr Result) Columns() (result []string) {
 	return result
 }
 
+// FormattedString is a function that formats strings by replacing ' with \\
 func FormattedString(s string) string {
 	return fmt.Sprintf("'%s'", strings.Replace(s, "'", "\\'", -1))
 }
 
+// Compare is a function that compares colums in your result
 func (ofr Result) Compare(other Result) (err error) {
 	if len(ofr) != len(other) {
 		return fmt.Errorf("number of columns different between row %v and compared row %v",
@@ -129,6 +137,7 @@ func (results Results) String() (s string) {
 	return fmt.Sprintf("[ %s ]", strings.Join(arr, ", "))
 }
 
+// Compare is a function that compares results with expected results
 func (results Results) Compare(other Results) (err error) {
 	if len(results) != len(other) {
 		return fmt.Errorf("different result (%s) then expected (%s)", results.String(),
