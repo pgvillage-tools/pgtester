@@ -1,4 +1,4 @@
-package config_test
+package config
 
 import (
 	"fmt"
@@ -6,7 +6,6 @@ import (
 	"path"
 	"testing"
 
-	"github.com/pgvillage-tools/pgtester/internal/config"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -47,9 +46,9 @@ tests:
 	defer func() {
 		_ = os.RemoveAll(tmpDir)
 	}()
-	myCredFile := path.Join(tmpDir, "my-config.yaml")
+	myCredFile := path.Join(tmpDir, "my-yaml")
 	require.NoError(t, os.WriteFile(myCredFile, []byte(myConfigData), 0o0600))
-	myConfigs, err := config.NewConfigsFromFile(myCredFile)
+	myConfigs, err := newConfigsFromFile(myCredFile)
 	assert.NoError(t, err)
 	require.Len(t, myConfigs, 2)
 	require.Len(t, myConfigs[0].Tests, 3)
@@ -58,15 +57,15 @@ tests:
 
 func TestTestValidate(t *testing.T) {
 	for _, check := range []struct {
-		test  config.Test
+		test  Test
 		valid bool
 		count int
 	}{
-		{test: config.Test{Name: "select 1"}, valid: true, count: 1},
-		{test: config.Test{Query: "select 1", Name: "select 2"}, valid: true, count: 1},
-		{test: config.Test{Query: "select 1"}, valid: true, count: 1},
-		{test: config.Test{}, count: 1},
-		{test: config.Test{Name: "select 1", Reverse: true}, valid: true, count: 0},
+		{test: Test{Name: "select 1"}, valid: true, count: 1},
+		{test: Test{Query: "select 1", Name: "select 2"}, valid: true, count: 1},
+		{test: Test{Query: "select 1"}, valid: true, count: 1},
+		{test: Test{}, count: 1},
+		{test: Test{Name: "select 1", Reverse: true}, valid: true, count: 0},
 	} {
 		t.Logf("test: %v", check.test)
 		if check.valid {

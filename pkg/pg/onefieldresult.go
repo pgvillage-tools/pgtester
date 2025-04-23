@@ -9,7 +9,9 @@ import (
 	"github.com/jackc/pgtype"
 )
 
-func ResultValueToString(value interface{}) string {
+// ResultValueToString returns given data such as an
+// unsigned 8 bit integer and return it as a string containing a number
+func ResultValueToString(value any) string {
 	switch v := value.(type) {
 	case string:
 		return v
@@ -64,7 +66,7 @@ type Results []Result
 
 // NewResultFromByteArrayArray is used to convert the result of a query into a Results object
 func NewResultFromByteArrayArray(cols []string, values []interface{}) (ofr Result, err error) {
-	ofr = make(Result)
+	ofr = Result{}
 	if len(cols) != len(values) {
 		return ofr, fmt.Errorf("number of cols different then number of values")
 	}
@@ -85,7 +87,7 @@ func (ofr Result) String() (s string) {
 	return fmt.Sprintf("{ %s }", strings.Join(results, ", "))
 }
 
-// Columns return a list of all columns of this recordset
+// Columns creates a column of all the results
 func (ofr Result) Columns() (result []string) {
 	for key := range ofr {
 		result = append(result, key)
@@ -93,12 +95,12 @@ func (ofr Result) Columns() (result []string) {
 	return result
 }
 
-// FormattedString is used to return a string value in a formatted fasion
+// FormattedString formats strings by replacing ' with \\
 func FormattedString(s string) string {
 	return fmt.Sprintf("'%s'", strings.ReplaceAll(s, "'", "\\'"))
 }
 
-// Compare can be used to compare a result with another result
+// Compare compares colums in your result
 func (ofr Result) Compare(other Result) (err error) {
 	if len(ofr) != len(other) {
 		return fmt.Errorf("number of columns different between row %v and compared row %v",
@@ -138,7 +140,7 @@ func (results Results) String() (s string) {
 	return fmt.Sprintf("[ %s ]", strings.Join(arr, ", "))
 }
 
-// Compare can be used to compare Results with other Results
+// Compare compares results with expected results
 func (results Results) Compare(other Results) (err error) {
 	if len(results) != len(other) {
 		return fmt.Errorf("different result (%s) then expected (%s)", results.String(),

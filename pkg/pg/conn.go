@@ -1,3 +1,4 @@
+// Package pg is the module that can be used for communication with postgress
 package pg
 
 import (
@@ -9,6 +10,7 @@ import (
 	"github.com/jackc/pgx/v4"
 )
 
+// Conn is a struct that can contain information about the conection (for example the delay)
 type Conn struct {
 	connParams Dsn
 	conn       *pgx.Conn
@@ -16,6 +18,7 @@ type Conn struct {
 	delay      time.Duration
 }
 
+// NewConn is a function that creates a new connection with given information about the connection
 func NewConn(connParams Dsn, retries uint, delay time.Duration) (c *Conn) {
 	return &Conn{
 		connParams: connParams,
@@ -24,6 +27,7 @@ func NewConn(connParams Dsn, retries uint, delay time.Duration) (c *Conn) {
 	}
 }
 
+// DSN is function that turns connection parameters into a dsn string
 func (c *Conn) DSN() (dsn string) {
 	var pairs []string
 	for key, value := range c.connParams {
@@ -32,13 +36,14 @@ func (c *Conn) DSN() (dsn string) {
 	return strings.Join(pairs[:], " ")
 }
 
+// Connect is a function that uses the conn object to connect you to postgress
 func (c *Conn) Connect() (err error) {
 	if c.conn != nil {
 		if c.conn.IsClosed() {
 			c.conn = nil
 		} else {
 			log.Debugf("already connected")
-			return
+			return nil
 		}
 	}
 	dsn := c.DSN()
@@ -47,7 +52,7 @@ func (c *Conn) Connect() (err error) {
 		c.conn, err = pgx.Connect(context.Background(), dsn)
 		if err == nil {
 			log.Debugf("succesfully connected")
-			return
+			return nil
 		}
 		c.conn = nil
 		log.Debugf("error while connecting: %s", err.Error())
@@ -57,7 +62,8 @@ func (c *Conn) Connect() (err error) {
 	return fmt.Errorf("number of connection retries (%d) exceeded", c.retries)
 }
 
-func (c *Conn) RunQueryGetOneField(query string, args ...interface{}) (result Results, err error) {
+// RunQueryGetOneField is a function that allows you to send querys to postgress and returns the result.
+func (c *Conn) RunQueryGetOneField(query string, args ...any) (result Results, err error) {
 	var fieldDescriptions []string
 	err = c.Connect()
 	if err != nil {
