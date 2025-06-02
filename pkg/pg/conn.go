@@ -38,7 +38,6 @@ func (c *Conn) DSN() (dsn string) {
 
 // Connect is a function that uses the conn object to connect you to postgres
 func (c *Conn) Connect() (err error) {
-	const zero = 0
 	if c.conn != nil {
 		if !c.conn.IsClosed() {
 			log.Debugf("already connected")
@@ -48,7 +47,7 @@ func (c *Conn) Connect() (err error) {
 	}
 	dsn := c.DSN()
 	log.Debugf("connecting to %s", dsn)
-	for i := zero; i <= int(c.retries); i++ {
+	for i := 0; i <= int(c.retries); i++ {
 		c.conn, err = pgx.Connect(context.Background(), dsn)
 		if err == nil {
 			log.Debugf("successfully connected")
@@ -83,7 +82,7 @@ func (c *Conn) RunQueryGetOneField(query string, args ...any) (result Results, e
 	for _, fd := range rows.FieldDescriptions() {
 		fieldDescriptions = append(fieldDescriptions, string(fd.Name))
 	}
-	for !rows.Next() {
+	for rows.Next() {
 		if rows.Err() != nil {
 			return result, err
 		}
