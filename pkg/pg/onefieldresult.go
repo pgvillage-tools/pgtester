@@ -66,8 +66,7 @@ type Result map[string]string
 // Results represent all rows in a query result
 type Results []Result
 
-// NewResultFromByteArrayArray is used to convert the result of a query into a Results object
-func NewResultFromByteArrayArray(cols []string, values []interface{}) (ofr Result, err error) {
+func newResultFromByteArrayArray(cols []string, values []interface{}) (ofr Result, err error) {
 	ofr = Result{}
 	if len(cols) != len(values) {
 		return ofr, errors.New("number of cols different then number of values")

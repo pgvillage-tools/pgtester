@@ -70,8 +70,8 @@ func (t *Test) MsgOnError() (msg string) {
 	return "unexpected error"
 }
 
-// MsgOnSuccess is a function that sends a message containing either 'expected'
-// or 'unexpected' succes when a succes occurs.
+// MsgOnSuccess is a function that sends a message containing either 'success as expected'
+// or 'unexpected succes' when a succes occurs.
 func (t *Test) MsgOnSuccess() (msg string) {
 	if t.Reverse {
 		return "unexpected success"
@@ -101,7 +101,6 @@ func (c Config) Name() (name string) {
 // NewConfigFromReader
 func newConfigsFromReader(reader io.Reader, name string) (configs Configs, err error) {
 	var i int
-	const zero = 0
 	decoder := yaml.NewDecoder(reader)
 	for {
 		// create new spec here
@@ -116,7 +115,7 @@ func newConfigsFromReader(reader io.Reader, name string) (configs Configs, err e
 			// check it was parsed
 			log.Debug().Msg("empty config")
 			continue
-		} else if config.Delay.Nanoseconds() == zero {
+		} else if config.Delay.Nanoseconds() == 0 {
 			config.Delay = time.Second
 		}
 

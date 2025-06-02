@@ -14,8 +14,6 @@ func Initialize(logger *zap.SugaredLogger) {
 	log = logger
 }
 
-var InvalidOption = errors.New("invalid role option")
-
 // Dsn will hold all connection parameters
 type Dsn map[string]string
 
