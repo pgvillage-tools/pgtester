@@ -44,7 +44,9 @@ tests:
 	if err != nil {
 		panic(fmt.Errorf("unable to create temp dir: %w", err))
 	}
-	defer os.RemoveAll(tmpDir)
+	defer func() {
+		_ = os.RemoveAll(tmpDir)
+	}()
 	myCredFile := path.Join(tmpDir, "my-config.yaml")
 	require.NoError(t, os.WriteFile(myCredFile, []byte(myConfigData), 0o0600))
 	myConfigs, err := config.NewConfigsFromFile(myCredFile)

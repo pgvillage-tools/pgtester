@@ -56,9 +56,13 @@ func ResultValueToString(value interface{}) string {
 	}
 }
 
+// Result represents one row in a query result
 type Result map[string]string
+
+// Results represent all rows in a query result
 type Results []Result
 
+// NewResultFromByteArrayArray is used to convert the result of a query into a Results object
 func NewResultFromByteArrayArray(cols []string, values []interface{}) (ofr Result, err error) {
 	ofr = make(Result)
 	if len(cols) != len(values) {
@@ -70,6 +74,7 @@ func NewResultFromByteArrayArray(cols []string, values []interface{}) (ofr Resul
 	return ofr, nil
 }
 
+// String is used to get the string value of a Result
 func (ofr Result) String() (s string) {
 	var results []string
 	for key, value := range ofr {
@@ -80,6 +85,7 @@ func (ofr Result) String() (s string) {
 	return fmt.Sprintf("{ %s }", strings.Join(results, ", "))
 }
 
+// Columns return a list of all columns of this recordset
 func (ofr Result) Columns() (result []string) {
 	for key := range ofr {
 		result = append(result, key)
@@ -87,10 +93,12 @@ func (ofr Result) Columns() (result []string) {
 	return result
 }
 
+// FormattedString is used to return a string value in a formatted fasion
 func FormattedString(s string) string {
-	return fmt.Sprintf("'%s'", strings.Replace(s, "'", "\\'", -1))
+	return fmt.Sprintf("'%s'", strings.ReplaceAll(s, "'", "\\'"))
 }
 
+// Compare can be used to compare a result with another result
 func (ofr Result) Compare(other Result) (err error) {
 	if len(ofr) != len(other) {
 		return fmt.Errorf("number of columns different between row %v and compared row %v",
@@ -118,6 +126,7 @@ func (ofr Result) Compare(other Result) (err error) {
 	return nil
 }
 
+// String can be used to get the string value of multiple results
 func (results Results) String() (s string) {
 	var arr []string
 	if len(results) == 0 {
@@ -129,6 +138,7 @@ func (results Results) String() (s string) {
 	return fmt.Sprintf("[ %s ]", strings.Join(arr, ", "))
 }
 
+// Compare can be used to compare Results with other Results
 func (results Results) Compare(other Results) (err error) {
 	if len(results) != len(other) {
 		return fmt.Errorf("different result (%s) then expected (%s)", results.String(),
