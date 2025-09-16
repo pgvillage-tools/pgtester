@@ -3,7 +3,7 @@ module github.com/pgvillage-tools/pgtester
 go 1.23.0
 
 require (
-	github.com/jackc/pgtype v1.14.0
+	github.com/jackc/pgtype v1.14.4
 	github.com/jackc/pgx/v4 v4.18.2
 	github.com/rs/zerolog v1.34.0
 	github.com/stretchr/testify v1.8.1
