@@ -77,10 +77,7 @@ func (c *Conn) RunQueryGetOneField(query string, args ...interface{}) (result Re
 	for _, fd := range rows.FieldDescriptions() {
 		fieldDescriptions = append(fieldDescriptions, string(fd.Name))
 	}
-	for {
-		if !rows.Next() {
-			break
-		}
+	for rows.Next() {
 		if rows.Err() != nil {
 			return result, err
 		}
