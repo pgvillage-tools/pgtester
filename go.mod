@@ -4,7 +4,7 @@ go 1.23.0
 
 require (
 	github.com/jackc/pgtype v1.14.4
-	github.com/jackc/pgx/v4 v4.18.2
+	github.com/jackc/pgx/v4 v4.18.3
 	github.com/rs/zerolog v1.34.0
 	github.com/stretchr/testify v1.8.1
 	go.uber.org/zap v1.27.0
