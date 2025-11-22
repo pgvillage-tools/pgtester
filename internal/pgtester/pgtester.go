@@ -1,3 +1,4 @@
+// Package pgtester is a package for testing postgres databases
 package pgtester
 
 import (
@@ -16,6 +17,7 @@ var (
 	atom zap.AtomicLevel
 )
 
+// Initialize is a function that prepares postgres
 func Initialize() {
 	atom = zap.NewAtomicLevel()
 	encoderCfg := zap.NewDevelopmentEncoderConfig()
@@ -29,25 +31,31 @@ func Initialize() {
 	pg.Initialize(log)
 }
 
+// Handle is a function that configures postgres, using all config files and checks for errors
 func Handle() {
 	var errors int
+	const (
+		eCANCELED     = 125
+		lineCharacter = "="
+		maxExitCode   = 125
+	)
 	configs, err := config.GetConfigs()
 	if err != nil {
 		log.Errorf("could not parse all configs: %s", err.Error())
-		os.Exit(125)
+		os.Exit(eCANCELED)
 	}
-	for _, config := range configs {
-		name := config.Name()
-		log.Infof(strings.Repeat("=", 19+len(name)))
+	for _, cfg := range configs {
+		name := cfg.Name()
+		log.Infof(strings.Repeat(lineCharacter, 19+len(name)))
 		log.Infof("Running tests from %s", name)
-		log.Infof(strings.Repeat("=", 19+len(name)))
-		if config.Debug {
+		log.Infof(strings.Repeat(lineCharacter, 19+len(name)))
+		if cfg.Debug {
 			atom.SetLevel(zapcore.DebugLevel)
 		} else {
 			atom.SetLevel(zapcore.InfoLevel)
 		}
-		conn := pg.NewConn(config.DSN, config.Retries, config.Delay)
-		for i, test := range config.Tests {
+		conn := pg.NewConn(cfg.DSN, cfg.Retries, cfg.Delay)
+		for i, test := range cfg.Tests {
 			err = test.Validate()
 			if err != nil {
 				log.Errorf("Test %d (%s): %s occurred : %s", i, test.Name, test.MsgOnError(), err.Error())
@@ -71,16 +79,17 @@ func Handle() {
 		}
 	}
 	if errors > 0 {
+		msg := fmt.Sprintf("unfortunately finished with %d unexpected results", errors)
+		log.Errorf(strings.Repeat(lineCharacter, len(msg)))
+		log.Errorf(msg)
+		log.Errorf(strings.Repeat(lineCharacter, len(msg)))
 		// exit code should be between 0 and 125, where 0 is success, and 125 is config error
 		// so change to a number between 1 and 125
-		msg := fmt.Sprintf("unfortunately finished with %d unexpected results", errors)
-		log.Errorf(strings.Repeat("=", len(msg)))
-		log.Errorf(msg)
-		log.Errorf(strings.Repeat("=", len(msg)))
-		errors = ((errors - 1) % 124) + 1
+		errors = ((errors - 1) % (maxExitCode - 1)) + 1
 		os.Exit(errors)
 	}
-	log.Infof(strings.Repeat("=", 47))
-	log.Infof("succesfully finished without unexpected results")
-	log.Infof(strings.Repeat("=", 47))
+	const exitString = "successfully finished without unexpected results"
+	log.Infof(strings.Repeat(lineCharacter, len(exitString)))
+	log.Infof(exitString)
+	log.Infof(strings.Repeat(lineCharacter, len(exitString)))
 }
