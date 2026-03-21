@@ -16,7 +16,7 @@ jobs:
           fetch-depth: 0
 
       - name: Set up Go
-        uses: actions/setup-go@v6.2.0
+        uses: actions/setup-go@v6.3.0
 
       - name: Download cyclonedx-gomod
         uses: CycloneDX/gh-gomod-generate-sbom@v2
@@ -24,7 +24,7 @@ jobs:
           version: v1
 
       - name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@v6
+        uses: goreleaser/goreleaser-action@v7
         with:
           distribution: goreleaser
           version: '~> v2'
