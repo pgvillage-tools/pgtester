@@ -10,7 +10,7 @@ permissions:
 
 env:
   # Golang version to use across CI steps
-  GOLANG_VERSION: '1.26' # As we have go toolchain 1.23 specified in go.mod
+  GOLANG_VERSION: '1.27' # Same as the Dockerfile; go-test-coverage@latest needs go >= 1.27
 
 jobs:
   check-go:

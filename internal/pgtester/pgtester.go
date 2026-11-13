@@ -38,6 +38,7 @@ func Handle() {
 		eCANCELED     = 125
 		lineCharacter = "="
 		maxExitCode   = 125
+		headerPrefix  = "Running tests from "
 	)
 	configs, err := config.GetConfigs()
 	if err != nil {
@@ -46,9 +47,9 @@ func Handle() {
 	}
 	for _, cfg := range configs {
 		name := cfg.Name()
-		log.Infof(strings.Repeat(lineCharacter, 19+len(name)))
-		log.Infof("Running tests from %s", name)
-		log.Infof(strings.Repeat(lineCharacter, 19+len(name)))
+		log.Infof(strings.Repeat(lineCharacter, len(headerPrefix)+len(name)))
+		log.Infof("%s%s", headerPrefix, name)
+		log.Infof(strings.Repeat(lineCharacter, len(headerPrefix)+len(name)))
 		if cfg.Debug {
 			atom.SetLevel(zapcore.DebugLevel)
 		} else {
