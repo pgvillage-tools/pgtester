@@ -10,7 +10,7 @@ permissions:
 
 env:
   # Golang version to use across CI steps
-  GOLANG_VERSION: '1.27' # Same as the Dockerfile; go-test-coverage@latest needs go >= 1.27
+  GOLANG_VERSION: '1.27' # Same as the Dockerfile
 
 jobs:
   check-go:
@@ -65,7 +65,12 @@ jobs:
           go-version: ${{ env.GOLANG_VERSION }}
       - name: Integration tests
         run: |
-          make check-coverage
+          make test-coverage
+      - name: Check test coverage
+        uses: vladopajic/go-test-coverage@6890500b00a7e5862e54662c04ea9fa7c799ce1e # v2.23.0
+        with:
+          config: .testcoverage.yml
+          profile: cover.out
 
   integrationtests:
     strategy:
