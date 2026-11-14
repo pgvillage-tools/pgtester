@@ -6,7 +6,8 @@ services:
     volumes:
       - ./testdata:/etc/pgtestdata/tests
   postgres:
-    image: postgres:17
+    # The CI matrix sets PGVERSION; 17 when run by hand
+    image: postgres:${PGVERSION:-17}
     ports:
       - '5432:5432'
     environment:
