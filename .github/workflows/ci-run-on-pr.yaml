@@ -77,7 +77,8 @@ jobs:
       matrix:
         PGVERSION: ['13', '14', '15', '16', '17']
     env:
-      PGVERSION: '{{ matrix.PGVERSION }}'
+      # docker-compose.yml starts postgres:${PGVERSION}
+      PGVERSION: ${{ matrix.PGVERSION }}
     name: Run integration tests
     runs-on: ubuntu-22.04
     steps:
